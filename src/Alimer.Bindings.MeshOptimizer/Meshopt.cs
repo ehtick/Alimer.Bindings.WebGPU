@@ -711,4 +711,198 @@ public static unsafe partial class Meshopt
                 vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride
                 );
     }
+
+    public static void GeneratePositionRemap(Span<uint> destination, ReadOnlySpan<float> vertexPositions, nuint vertexPositionsStride)
+    {
+        fixed (uint* destinationPtr = destination)
+        fixed (float* vertexPositionsPtr = vertexPositions)
+            GeneratePositionRemap(destinationPtr, vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride);
+    }
+
+    public static int DecodeIndexVersion(ReadOnlySpan<byte> buffer)
+    {
+        fixed (byte* bufferPtr = buffer)
+            return DecodeIndexVersion(bufferPtr, (nuint)buffer.Length);
+    }
+
+    public static int DecodeVertexVersion(ReadOnlySpan<byte> buffer)
+    {
+        fixed (byte* bufferPtr = buffer)
+            return DecodeVertexVersion(bufferPtr, (nuint)buffer.Length);
+    }
+
+    public static void DecodeFilterColor<T>(Span<T> buffer)
+        where T : unmanaged
+    {
+        fixed (T* bufferPtr = buffer)
+            DecodeFilterColor(bufferPtr, (nuint)buffer.Length, (nuint)sizeof(T));
+    }
+
+    public static void EncodeFilterColor<T>(Span<T> destination, int bits, ReadOnlySpan<float> data)
+        where T : unmanaged
+    {
+        fixed (T* destinationPtr = destination)
+        fixed (float* dataPtr = data)
+            EncodeFilterColor(destinationPtr, (nuint)destination.Length, (nuint)sizeof(T), bits, dataPtr);
+    }
+
+    public static nuint SimplifyWithUpdate(
+        Span<uint> indices,
+        ReadOnlySpan<float> vertexPositions, nuint vertexPositionsStride,
+        ReadOnlySpan<float> vertexAttributes, nuint vertexAttributesStride,
+        ReadOnlySpan<float> attributeWeights,
+        nuint attributeCount,
+        ReadOnlySpan<byte> vertexLock,
+        nuint targetIndexCount,
+        float targetError,
+        SimplificationOptions options,
+        out float error)
+    {
+        Unsafe.SkipInit(out error);
+
+        fixed (uint* indicesPtr = indices)
+        fixed (float* vertexPositionsPtr = vertexPositions)
+        fixed (float* vertexAttributesPtr = vertexAttributes)
+        fixed (float* attributeWeightsPtr = attributeWeights)
+        fixed (byte* vertexLockPtr = vertexLock)
+        fixed (float* errorPtr = &error)
+        {
+            return SimplifyWithUpdate(
+                indicesPtr, (nuint)indices.Length,
+                vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride,
+                vertexAttributesPtr, vertexAttributesStride,
+                attributeWeightsPtr,
+                attributeCount,
+                vertexLockPtr,
+                targetIndexCount,
+                targetError,
+                (uint)options,
+                errorPtr);
+        }
+    }
+
+    public static nuint SimplifyPrune(
+        Span<uint> destination,
+        ReadOnlySpan<uint> indices,
+        ReadOnlySpan<float> vertexPositions,
+        nuint vertexPositionsStride,
+        float targetError)
+    {
+        fixed (uint* destinationPtr = destination)
+        fixed (uint* indicesPtr = indices)
+        fixed (float* vertexPositionsPtr = vertexPositions)
+            return SimplifyPrune(destinationPtr, indicesPtr, (nuint)indices.Length, vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride, targetError);
+    }
+
+    public static CoverageStatistics AnalyzeCoverage(
+        ReadOnlySpan<uint> indices,
+        ReadOnlySpan<float> vertexPositions, nuint vertexPositionsStride)
+    {
+        fixed (uint* indicesPtr = indices)
+        fixed (float* vertexPositionsPtr = vertexPositions)
+            return AnalyzeCoverage(indicesPtr, (nuint)indices.Length, vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride);
+    }
+
+    public static nuint BuildMeshletsFlex(
+        Span<Meshlet> meshlets,
+        Span<uint> meshletVertices,
+        Span<byte> meshletTriangles,
+        ReadOnlySpan<uint> indices,
+        ReadOnlySpan<float> vertexPositions, nuint vertexPositionsStride,
+        nuint maxVertices, nuint minTriangles, nuint maxTriangles,
+        float coneWeight, float splitFactor)
+    {
+        fixed (Meshlet* meshletsPtr = meshlets)
+        fixed (uint* meshletVerticesPtr = meshletVertices)
+        fixed (byte* meshletTrianglesPtr = meshletTriangles)
+        fixed (uint* indicesPtr = indices)
+        fixed (float* vertexPositionsPtr = vertexPositions)
+            return BuildMeshletsFlex(meshletsPtr, meshletVerticesPtr, meshletTrianglesPtr,
+                indicesPtr, (nuint)indices.Length,
+                vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride,
+                maxVertices, minTriangles, maxTriangles, coneWeight, splitFactor);
+    }
+
+    public static nuint BuildMeshletsSpatial(
+        Span<Meshlet> meshlets,
+        Span<uint> meshletVertices,
+        Span<byte> meshletTriangles,
+        ReadOnlySpan<uint> indices,
+        ReadOnlySpan<float> vertexPositions, nuint vertexPositionsStride,
+        nuint maxVertices, nuint minTriangles, nuint maxTriangles,
+        float fillWeight)
+    {
+        fixed (Meshlet* meshletsPtr = meshlets)
+        fixed (uint* meshletVerticesPtr = meshletVertices)
+        fixed (byte* meshletTrianglesPtr = meshletTriangles)
+        fixed (uint* indicesPtr = indices)
+        fixed (float* vertexPositionsPtr = vertexPositions)
+            return BuildMeshletsSpatial(meshletsPtr, meshletVerticesPtr, meshletTrianglesPtr,
+                indicesPtr, (nuint)indices.Length,
+                vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride,
+                maxVertices, minTriangles, maxTriangles, fillWeight);
+    }
+
+    public static Bounds ComputeSphereBounds(
+        ReadOnlySpan<float> positions, nuint positionsStride,
+        ReadOnlySpan<float> radii, nuint radiiStride)
+    {
+        fixed (float* positionsPtr = positions)
+        fixed (float* radiiPtr = radii)
+            return ComputeSphereBounds(positionsPtr, (nuint)positions.Length, positionsStride, radiiPtr, radiiStride);
+    }
+
+    public static Bounds ComputeSphereBounds(
+        ReadOnlySpan<float> positions, nuint positionsStride)
+    {
+        fixed (float* positionsPtr = positions)
+            return ComputeSphereBounds(positionsPtr, (nuint)positions.Length, positionsStride, null, 0);
+    }
+
+    public static nuint PartitionClusters(
+        Span<uint> destination,
+        ReadOnlySpan<uint> clusterIndices,
+        ReadOnlySpan<uint> clusterIndexCounts,
+        ReadOnlySpan<float> vertexPositions, nuint vertexPositionsStride,
+        nuint targetPartitionSize)
+    {
+        fixed (uint* destinationPtr = destination)
+        fixed (uint* clusterIndicesPtr = clusterIndices)
+        fixed (uint* clusterIndexCountsPtr = clusterIndexCounts)
+        fixed (float* vertexPositionsPtr = vertexPositions)
+            return PartitionClusters(destinationPtr, clusterIndicesPtr, (nuint)clusterIndices.Length, clusterIndexCountsPtr, (nuint)clusterIndexCounts.Length, vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride, targetPartitionSize);
+    }
+
+    public static void SpatialClusterPoints(
+        Span<uint> destination,
+        ReadOnlySpan<float> vertexPositions, nuint vertexPositionsStride,
+        nuint clusterSize)
+    {
+        fixed (uint* destinationPtr = destination)
+        fixed (float* vertexPositionsPtr = vertexPositions)
+            SpatialClusterPoints(destinationPtr, vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride, clusterSize);
+    }
+
+    public static nuint GenerateVertexRemapCustom(
+        Span<uint> destination,
+        nuint indexCount,
+        ReadOnlySpan<float> vertexPositions, nuint vertexPositionsStride,
+        delegate* unmanaged<nint, uint, uint, int> callback, nint context)
+    {
+        fixed (uint* destinationPtr = destination)
+        fixed (float* vertexPositionsPtr = vertexPositions)
+            return GenerateVertexRemapCustom(destinationPtr, null, indexCount, vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride, callback, context);
+    }
+
+    public static nuint GenerateVertexRemapCustom(
+        Span<uint> destination,
+        ReadOnlySpan<uint> indices,
+        ReadOnlySpan<float> vertexPositions, nuint vertexPositionsStride,
+        delegate* unmanaged<nint, uint, uint, int> callback, nint context)
+    {
+        fixed (uint* destinationPtr = destination)
+        fixed (uint* indicesPtr = indices)
+        fixed (float* vertexPositionsPtr = vertexPositions)
+            return GenerateVertexRemapCustom(destinationPtr, indicesPtr, (nuint)indices.Length, vertexPositionsPtr, (nuint)vertexPositions.Length, vertexPositionsStride, callback, context);
+    }
 }
